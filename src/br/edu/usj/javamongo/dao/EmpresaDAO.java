@@ -7,8 +7,6 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -21,9 +19,8 @@ public class EmpresaDAO {
 
 	public List<Empresa> listarEmpresas(){
 				
+		MongoDatabase database = Conexao.getDatabase();
 		List<Empresa> empresas = new ArrayList<Empresa>();
-		MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-		MongoDatabase database = mongoClient.getDatabase("usj");
 		MongoCollection<Document> coll = database.getCollection("empresa");
 		Iterator<Document> ite = coll.find().iterator();
 		
@@ -39,13 +36,11 @@ public class EmpresaDAO {
 			
 			empresas.add(empresa);
 		}
- 
 		return empresas;
 	}
 	
 	public Empresa buscarEmpresa(ObjectId id) {
-		MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-		MongoDatabase database = mongoClient.getDatabase("usj");
+		MongoDatabase database = Conexao.getDatabase();
 		MongoCollection<Document> coll = database.getCollection("empresa");
 		Document doc = coll.find(Filters.eq("_id", id)).first();
 		Empresa empresa = new Empresa();
@@ -59,9 +54,7 @@ public class EmpresaDAO {
 	}
 	
 	public boolean gravarEmpresa(Empresa e) {
-		
-		MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-		MongoDatabase database = mongoClient.getDatabase("usj");
+		MongoDatabase database = Conexao.getDatabase();
 		MongoCollection<Document> coll = database.getCollection("empresa");
 		
 		Document doc = new Document("codigo", e.getCodigo())
@@ -70,13 +63,11 @@ public class EmpresaDAO {
 				.append("ramo_atuacao", e.getRamoAtuacao())
 				.append("capital", e.getCapital());
 		coll.insertOne(doc);
-		
 		return true;
 	}
 	
 	public boolean excluirEmpresa(int codigo) {
-		MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-		MongoDatabase database = mongoClient.getDatabase("usj");
+		MongoDatabase database = Conexao.getDatabase();
 		MongoCollection<Document> coll = database.getCollection("empresa");
 		Document doc = coll.find(Filters.eq("codigo", codigo)).first();
 		System.out.println("documento = "+doc.getObjectId("_id"));
